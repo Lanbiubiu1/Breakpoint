@@ -53,12 +53,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)-$(Configuration)\bin\</OutDir>
     <IntDir>$(SolutionDir)build\$(PlatformShortName)-$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(THE_FORGE_ROOT);$(ProjectDir);$(ProjectDir)..\includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(THE_FORGE_ROOT);$(THE_FORGE_ROOT)\Common_3;$(THE_FORGE_ROOT)\Common_3\Utilities;$(ProjectDir);$(ProjectDir)..\includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)-$(Configuration)\bin\</OutDir>
     <IntDir>$(SolutionDir)build\$(PlatformShortName)-$(Configuration)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(THE_FORGE_ROOT);$(ProjectDir);$(ProjectDir)..\includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(THE_FORGE_ROOT);$(THE_FORGE_ROOT)\Common_3;$(THE_FORGE_ROOT)\Common_3\Utilities;$(ProjectDir);$(ProjectDir)..\includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -67,7 +67,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(THE_FORGE_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THE_FORGE_ROOT);$(THE_FORGE_ROOT)\Common_3;$(THE_FORGE_ROOT)\Common_3\Utilities;$(ProjectDir);$(ProjectDir)..\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,7 +84,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(THE_FORGE_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THE_FORGE_ROOT);$(THE_FORGE_ROOT)\Common_3;$(THE_FORGE_ROOT)\Common_3\Utilities;$(ProjectDir);$(ProjectDir)..\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
