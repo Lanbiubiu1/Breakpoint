@@ -1,8 +1,22 @@
 *Breakpoint* is a project created by [Daniel Gerhardt](https://www.danieljgerhardt.com/), [Dineth Meegoda](https://dinethmeegoda.com/), [Matt Schwartz](https://www.linkedin.com/in/matthew-schwartz-37019016b/), [Zixiao Wang](https://www.linkedin.com/in/zixiao-wang-826a5a255/), for CIS 5650 GPU Programming at the University of Pennsylvania.
 
-Our project combines a novel particle simulation technique - the Position Based Material Point Method(PBMPM), developed by EA - with a state-of-the-art fluid surface construction method, using mesh shading and a bilevel-grid, all running in real time. 
+Our project combines a novel particle simulation technique - the Position Based Material Point Method(PBMPM), developed by EA - with a state-of-the-art fluid surface construction method, using mesh shading and a bilevel-grid, all running in real time.
 
 To the best of our knowledge, this is the first released (and open sourced!) 3D GPU Implementation of PBMPM.
+
+## Forge migration overview
+
+This branch reimplements *Breakpoint* on top of [The Forge](https://github.com/ConfettiFX/The-Forge) rendering framework. The DirectX 12 engine that originally powered the project has been replaced by a Forge `IApp` implementation that drives the simulation, UI and rendering loop. The intent is to make the PBMPM-based simulation easier to run across different graphics backends supported by The Forge while keeping the project structure approachable for future experiments.
+
+The migration keeps the existing PBMPM concepts but rewrites the runtime to use Forge abstractions:
+
+- A new `PBMPMForgeApp` implements The Forge application lifecycle (`Init`, `Load`, `Update`, `Draw`, etc.).
+- GPU resources (swap chain, pipelines, descriptor sets and buffers) are created through Forge helpers instead of custom DirectX 12 wrappers.
+- ImGui integration now uses Forge's `AppUI` module, simplifying UI setup.
+- Particle data is streamed to the GPU via Forge-managed buffers and rendered with Forge pipelines compiled from the new `Shaders/Forge` HLSL programs.
+- A lightweight CPU PBMPM approximation keeps the material point controls available without depending on the original DirectX compute stack.
+
+The legacy DirectX code is still present under `src/legacy/` for reference, but the Visual Studio project now builds the Forge-based renderer by default.
 
 # Breakpoint
 
@@ -24,17 +38,28 @@ To the best of our knowledge, this is the first released (and open sourced!) 3D 
 
 ## Using the Project and Controls
 
-Cloning the repository and ensuring that DirectX is correctly installed should be the only steps necessary to build and run *Breakpoint* locally. The camera uses WASD for standard cardinal movement, and Space and Control for up/down movement. Press shift and rotate the mouse to rotate the camera. All mouse control of the fluid happens when right click is pressed, with extra keyboard combinations to change the functionality. Shift is for pull, alt is for grab, and no button is for push.
+### Prerequisites
 
-In order to create scenes, currently you must edit the `PBMPMScene.cpp` file and change the `createShapes()` function. When adding shapes, make sure to adhere to the order of arguments in the Shape struct defined in `PBMPMScene.h`. Whichever particles you want to render must also be set in the `renderToggles` array defined at the top of the function. 
+1. Clone [The Forge](https://github.com/ConfettiFX/The-Forge) next to this repository (or anywhere on disk) and build it following the upstream instructions.
+2. Define the environment variable `THE_FORGE_ROOT` so that it points to the root of your Forge checkout. The Visual Studio project uses this variable to resolve headers and shader compilation tools.
+3. Ensure the Forge `Common_3` headers and compiled libraries are available. When building with Visual Studio, restoring The Forge NuGet dependencies is not necessary—the Forge build generates the required libraries.
 
-By default, Fluid and Elastic are set to render with a fluid waterfall and two jelly cubes spawning.
+### Building
 
-In order to change rendering modes, simulation parameters, or mesh shading parameters, use the imgui window in the application.
+1. Clone this repository.
+2. Open `Breakpoint.sln` in Visual Studio 2022 (v143 toolset).
+3. Select the `Release|x64` or `Debug|x64` configuration.
+4. Build and run. The solution now launches the Forge-driven application rather than the legacy DirectX runtime.
 
-#### Building in VS Code
-- Clone the repository
-- From the command pallete (Ctrl + Shift + P), run `Debug: Select and Start Debugging > Release` to build and run the release build of the project.
+### Controls and tuning
+
+The controls remain similar to the original project:
+
+- `W`, `A`, `S`, `D` move the free-look camera; `Space` and `Ctrl` move up/down.
+- Hold the right mouse button to orbit, and use the mouse wheel to adjust the distance.
+- The Forge `AppUI` window (opened automatically) exposes sliders for gravity, damping and particle radius as well as a reset button for the simulation state.
+
+Scene composition previously lived inside `PBMPMScene.cpp`; the Forge version exposes fewer hard-coded shapes and instead focuses on the particle cloud controlled by the UI. Extending the simulation now involves editing `src/ForgeApp/PBMPMSimulation.cpp` and adjusting the Forge pipelines in `src/ForgeApp/PBMPMForgeApp.cpp`.
 
 ## DirectX Core
 
